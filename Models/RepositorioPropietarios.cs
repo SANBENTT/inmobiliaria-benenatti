@@ -1,0 +1,158 @@
+using MySql.Data.MySqlClient;
+
+namespace inmobiliaria_benenatti.Models;
+
+public class RepositorioPropietarios
+{
+    string connectionString = "Server=localhost;User=root;Password=;Database=inmobiliaria;sslmode=none";
+    public List<Propietarios>obtenerPropietarios()
+    {
+        List<Propietarios> propietarios = new List<Propietarios>();
+
+        using (MySqlConnection connection = new MySqlConnection(connectionString))
+
+        {
+            var query = $@"SELECT {nameof(Propietarios.id)}, 
+                                  {nameof(Propietarios.dni)}, 
+                                  {nameof(Propietarios.nombre)}, 
+                                  {nameof(Propietarios.telefono)}, 
+                                  {nameof(Propietarios.email)}, 
+                                  {nameof(Propietarios.direccion)} 
+                           FROM propietarios";
+            using (MySqlCommand command = new MySqlCommand(query, connection))
+            {
+                connection.Open();
+                var reader = command.ExecuteReader();
+                while (reader.Read())
+                {
+                    propietarios.Add(new Propietarios
+                    {
+                        id = reader.GetInt32(nameof(Propietarios.id)),
+                        dni = reader.GetString(nameof(Propietarios.dni)),
+                        nombre = reader.GetString(nameof(Propietarios.nombre)),
+                        telefono = reader.GetString(nameof(Propietarios.telefono)),
+                        email = reader.GetString(nameof(Propietarios.email)),
+                        direccion = reader.GetString(nameof(Propietarios.direccion))
+                    });
+                }
+                connection.Close();
+            }
+            return propietarios;
+        }
+
+
+
+    }
+public Propietarios? Obtener(int id)
+    {
+        Propietarios? res = null;
+
+        using (MySqlConnection connection = new MySqlConnection(connectionString))
+
+        {
+            var query = $@"SELECT {nameof(Propietarios.id)}, 
+                                  {nameof(Propietarios.dni)}, 
+                                  {nameof(Propietarios.nombre)}, 
+                                  {nameof(Propietarios.telefono)}, 
+                                  {nameof(Propietarios.email)}, 
+                                  {nameof(Propietarios.direccion)} 
+                           FROM propietarios WHERE {nameof(Propietarios.id)} = @id";
+            using (MySqlCommand command = new MySqlCommand(query, connection))
+            {
+                command.Parameters.AddWithValue("@id", id);
+                connection.Open();
+                var reader = command.ExecuteReader();
+                if (reader.Read())
+                {
+                    res = new Propietarios
+                    {
+                        id = reader.GetInt32(nameof(Propietarios.id)),
+                        dni = reader.GetString(nameof(Propietarios.dni)),
+                        nombre = reader.GetString(nameof(Propietarios.nombre)),
+                        telefono = reader.GetString(nameof(Propietarios.telefono)),
+                        email = reader.GetString(nameof(Propietarios.email)),
+                        direccion = reader.GetString(nameof(Propietarios.direccion))
+                    };
+                }
+                connection.Close();
+            }
+            return res;
+        }
+    }
+
+    public int Alta(Propietarios propietarios)
+    {
+        int res = -1;
+        using (MySqlConnection connection = new MySqlConnection(connectionString))
+        {
+            var query = $@"INSERT INTO propietarios 
+                          ({nameof(Propietarios.dni)}, 
+                           {nameof(Propietarios.nombre)}, 
+                           {nameof(Propietarios.telefono)}, 
+                           {nameof(Propietarios.email)}, 
+                           {nameof(Propietarios.direccion)}) 
+                           VALUES 
+                          (@dni, @nombre, @telefono, @email, @direccion);
+                          SELECT LAST_INSERT_ID();";
+            using (MySqlCommand command = new MySqlCommand(query, connection))
+            {
+                command.Parameters.AddWithValue("@dni", propietarios.dni);
+                command.Parameters.AddWithValue("@nombre", propietarios.nombre);
+                command.Parameters.AddWithValue("@telefono", propietarios.telefono);
+                command.Parameters.AddWithValue("@email", propietarios.email);
+                command.Parameters.AddWithValue("@direccion", propietarios.direccion);
+                connection.Open();
+                res = Convert.ToInt32(command.ExecuteScalar());
+                connection.Close();
+            }
+
+
+        }
+        return res;
+    }
+
+    public bool Modificar(Propietarios propietarios)
+    {
+        bool res = false;
+        using (MySqlConnection connection = new MySqlConnection(connectionString))
+        {
+            var query = $@"UPDATE propietarios SET 
+                           {nameof(Propietarios.dni)} = @dni, 
+                           {nameof(Propietarios.nombre)} = @nombre, 
+                           {nameof(Propietarios.telefono)} = @telefono, 
+                           {nameof(Propietarios.email)} = @email, 
+                           {nameof(Propietarios.direccion)} = @direccion
+                           WHERE {nameof(Propietarios.id)} = @id";
+            using (MySqlCommand command = new MySqlCommand(query, connection))
+            {
+                command.Parameters.AddWithValue("@id", propietarios.id);
+                command.Parameters.AddWithValue("@dni", propietarios.dni);
+                command.Parameters.AddWithValue("@nombre", propietarios.nombre);
+                command.Parameters.AddWithValue("@telefono", propietarios.telefono);
+                command.Parameters.AddWithValue("@email", propietarios.email);
+                command.Parameters.AddWithValue("@direccion", propietarios.direccion);
+                connection.Open();
+                res = command.ExecuteNonQuery() > 0;
+                connection.Close();
+            }
+        }
+        return res;
+    }
+    
+    public int Baja (int id)
+    {
+        int res = -1;
+        using (MySqlConnection connection = new MySqlConnection(connectionString))
+        {
+            var query = $@"DELETE FROM propietarios WHERE {nameof(Propietarios.id)} = @id";
+            using (MySqlCommand command = new MySqlCommand(query, connection))
+            {
+                command.Parameters.AddWithValue("@id", id);
+                connection.Open();
+                res = command.ExecuteNonQuery();
+                connection.Close();
+            }
+        }
+        return res;
+    }
+}

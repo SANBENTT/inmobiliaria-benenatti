@@ -1,0 +1,77 @@
+﻿@model IEnumerable<inmobiliaria_benenatti.Models.Propietarios>
+
+@{
+    ViewData["Title"] = "Listado de Propietarios";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Listado de Propietarios</h1>
+</div>
+<h3><a href="/Propietarios/Edicion/">Crear Nuevo Propietarios</a></h3>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.id)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.nombre)
+            </th>
+            <th>    
+                @Html.DisplayNameFor(model => model.dni)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.telefono)
+            </th>
+             <th>
+                @Html.DisplayNameFor(model => model.email)
+            </th>
+             <th>
+                @Html.DisplayNameFor(model => model.direccion)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model) 
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.id)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.nombre)
+                </td>
+                 <td>
+                    @Html.DisplayFor(modelItem => item.dni)
+                </td>
+                 <td>
+                    @Html.DisplayFor(modelItem => item.telefono)
+                </td>
+                 <td>
+                    @Html.DisplayFor(modelItem => item.email)
+                 </td>
+                 <td>
+                     @Html.DisplayFor(modelItem => item.direccion)
+                 </td>
+                <td>
+                    <a href="/Propietarios/Edicion/@item.id">Editar</a>
+                    @Html.ActionLink("Editar", "Edicion", new { id = item.id }) |
+                    @Html.ActionLink("Detalles", "Details", new { id = item.id }) |
+                    
+                    <input type="button" value="Eliminar" class="btn btn-primary" onclick="Eliminar(@item.id, `@item.nombre`)" />
+                </td>
+            </tr>    
+        }
+    </tbody>
+</table>
+
+@section Scripts {
+    <script>
+        function Eliminar(id, nombre){
+         if (confirm(`¿Confirma la baja del inquilino ${nombre} ?`)) {
+            location.href = "/Propietarios/Eliminar/" + id;
+        }
+    }
+    </script>
+}
