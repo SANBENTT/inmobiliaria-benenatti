@@ -1,0 +1,65 @@
+@model inmobiliaria_benenatti.Models.Propietarios
+
+@{
+    ViewData["Title"] = "Listado de Propietarios";
+    int id = Model==null ? 0 : Model.id;
+    }
+
+<h4>Detalles del Propietarios</h4>
+<hr />
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <dl class="row">
+                    <dt class="col-sm-4">
+                        @Html.DisplayNameFor(model => model.id)
+                    </dt>
+                    <dd class="col-sm-8">
+                        @Html.DisplayFor(model => model.id)
+                    </dd>
+
+                    <dt class="col-sm-4">
+                        @Html.DisplayNameFor(model => model.nombre)
+                    </dt>
+                    <dd class="col-sm-8">
+                        @Html.DisplayFor(model => model.nombre)
+                    </dd>
+
+                    <dt class="col-sm-4">
+                        @Html.DisplayNameFor(model => model.dni)
+                    </dt>
+                    <dd class="col-sm-8">
+                        @Html.DisplayFor(model => model.dni)
+                    </dd>
+
+                    <dt class="col-sm-4">
+                        @Html.DisplayNameFor(model => model.telefono)
+                    </dt>
+                    <dd class="col-sm-8">
+                        @Html.DisplayFor(model => model.telefono)
+                    </dd>
+
+                    <dt class="col-sm-4">
+                        @Html.DisplayNameFor(model => model.email)
+                    </dt>
+                    <dd class="col-sm-8">
+                        @Html.DisplayFor(model => model.email)
+                    </dd>
+
+                    <dt class="col-sm-4">
+                        @Html.DisplayNameFor(model => model.direccion)
+                    </dt>
+                    <dd class="col-sm-8">
+                        @Html.DisplayFor(model => model.direccion)
+                    </dd>
+                </dl>
+            </div>
+        </div>
+
+        <div class="form-group mt-3">
+            <a asp-action="Index" class="btn btn-secondary">Volver al Listado</a>
+        </div>
+    </div>
+</div>
+

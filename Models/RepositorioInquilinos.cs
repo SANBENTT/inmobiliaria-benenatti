@@ -139,8 +139,9 @@ public class RepositorioInquilinos
         }
         return res;
     }
-    
-    public int Baja (int id)
+
+
+    public int Baja(int id)
     {
         int res = -1;
         using (MySqlConnection connection = new MySqlConnection(connectionString))
@@ -156,4 +157,50 @@ public class RepositorioInquilinos
         }
         return res;
     }
+
+
+    public bool ExisteEmail(string email, int? id = null)
+    {
+        bool existe = false;
+        using (MySqlConnection connection = new MySqlConnection(connectionString))
+        {
+            var query = $@"SELECT COUNT(*) FROM inquilinos 
+                       WHERE {nameof(Inquilinos.email)} = @mail
+                       {(id.HasValue ? "AND id <> @id" : "")}";
+            using (MySqlCommand command = new MySqlCommand(query, connection))
+            {
+                command.Parameters.AddWithValue("@mail", email);
+                if (id.HasValue)
+                    command.Parameters.AddWithValue("@id", id.Value);
+
+                connection.Open();
+                existe = Convert.ToInt32(command.ExecuteScalar()) > 0;
+                connection.Close();
+            }
+        }
+        return existe;
+    }
+    
+    public bool ExisteDni(string dni, int id = 0)
+        {
+            bool existe = false;
+            using (var connection = new MySqlConnection(connectionString))
+            {
+                var query = @"SELECT COUNT(*) 
+                            FROM inquilinos 
+                            WHERE dni = @dni AND id != @id";
+
+                using (var command = new MySqlCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@dni", dni);
+                    command.Parameters.AddWithValue("@id", id);
+                    connection.Open();
+                    var result = Convert.ToInt32(command.ExecuteScalar());
+                    existe = result > 0;
+                }
+            }
+            return existe;
+        }
+
+
 }

@@ -1,0 +1,75 @@
+@model IEnumerable<inmobiliaria_benenatti.Models.Contrato>
+
+@{
+    ViewData["Title"] = "Listado de Contratos";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Listado de Contratos</h1>
+</div>
+<h3><a href="/Contratos/Edicion/">Crear Nuevo Contrato</a></h3>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.IdContrato)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.InquilinoId)
+            </th>
+            <th>    
+                @Html.DisplayNameFor(model => model.InmuebleId)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.FechaInicio)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.FechaFin)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Monto)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model) 
+        {
+            <tr>
+                <td>
+                   @Html.DisplayFor(modelItem => item.IdContrato)
+                </td>
+                <td>
+                   @Html.DisplayFor(modelItem => item.InquilinoId)
+                </td>
+                <td>
+                   @Html.DisplayFor(modelItem => item.InmuebleId)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.FechaInicio)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.FechaFin)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Monto)
+                </td>
+                <td>
+                    @Html.ActionLink("Editar", "Edicion", new { id = item.IdContrato }) |
+                    @Html.ActionLink("Detalles", "Detalles", new { id = item.IdContrato }) |
+                    <input type="button" value="Eliminar" class="btn btn-primary" onclick="Eliminar(@item.IdContrato, 'Contrato @item.IdContrato')" />
+                </td>
+            </tr>    
+        }
+    </tbody>
+</table>
+
+@section Scripts {
+    <script>
+        function Eliminar(IdContrato, descripcion){
+            if (confirm(`¿Confirma la baja del ${descripcion}?`)) {
+                location.href = "/Contratos/Eliminar/" + IdContrato;
+            }
+        }
+    </script>
+}

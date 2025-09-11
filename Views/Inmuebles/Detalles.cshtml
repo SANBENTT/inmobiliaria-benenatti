@@ -1,0 +1,72 @@
+@model inmobiliaria_benenatti.Models.Inmueble
+
+@{
+    ViewData["Title"] = "Listado de Inmuebles";
+    int id = Model==null ? 0 : Model.IdInmueble;
+    }
+
+<h4>Detalles del Inmuebles</h4>
+<hr />
+<div class="row">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-body">
+                <dl class="row">
+                    <dt class="col-sm-4">
+                        @Html.DisplayNameFor(model => model.IdInmueble)
+                    </dt>
+                    <dd class="col-sm-8">
+                        @Html.DisplayFor(model => model.IdInmueble)
+                    </dd>
+
+                    <dt class="col-sm-4">
+                        @Html.DisplayNameFor(model => model.Direccion)
+                    </dt>
+                    <dd class="col-sm-8">
+                        @Html.DisplayFor(model => model.Direccion)
+                    </dd>
+
+                    <dt class="col-sm-4">
+                        @Html.DisplayNameFor(model => model.Ambientes)
+                    </dt>
+                    <dd class="col-sm-8">
+                        @Html.DisplayFor(model => model.Ambientes)
+                    </dd>
+
+                    <dt class="col-sm-4">
+                        @Html.DisplayNameFor(model => model.Superficie)
+                    </dt>
+                    <dd class="col-sm-8">
+                        @Html.DisplayFor(model => model.Superficie)
+                    </dd>
+
+                    <dt class="col-sm-4">
+                        @Html.DisplayNameFor(model => model.Latitud)
+                    </dt>
+                    <dd class="col-sm-8">
+                        @Html.DisplayFor(model => model.Latitud)
+                    </dd>
+
+                    <dt class="col-sm-4">
+                        @Html.DisplayNameFor(model => model.Longitud)
+                    </dt>
+                    <dd class="col-sm-8">
+                        @Html.DisplayFor(model => model.Longitud)
+                    </dd>
+
+                    <dt class="col-sm-4">
+                        @Html.DisplayNameFor(model => model.PropietarioId)
+                    </dt>
+                    <dd class="col-sm-8">
+                        @Html.DisplayFor(model => model.PropietarioId)
+                    </dd>
+                </dl>
+            </div>
+        </div>
+
+        <div class="form-group mt-3">
+            <a asp-action="Index" class="btn btn-secondary">Volver al Listado</a>
+        </div>
+    </div>
+</div>
+

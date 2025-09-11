@@ -33,7 +33,23 @@ public class InquilinosController : Controller
     [HttpPost]
     public IActionResult Guardar(int id, Inquilinos inquilino)
     {
-        id = inquilino.id;
+        if (!ModelState.IsValid)
+        {
+            return View("Edicion", inquilino);
+        }
+        if (repo.ExisteDni(inquilino.dni, inquilino.id))
+        {
+            ModelState.AddModelError("Dni", "Ya existe un inquilino con ese DNI");
+            return View("Edicion", inquilino);
+        }
+
+        // Verificar email duplicado
+        if (repo.ExisteEmail(inquilino.email!, id == 0 ? null : id))
+        {
+            ModelState.AddModelError("email", "El email ya está en uso por otro inquilino");
+            return View("Edicion", inquilino);
+        }
+
         if (id == 0)
         {
             repo.Alta(inquilino);
@@ -45,13 +61,23 @@ public class InquilinosController : Controller
         return RedirectToAction(nameof(Index));
     }
 
- 
+
     public IActionResult Eliminar(int id)
     {
-   
-            repo.Baja(id);
-        
-    
+
+        repo.Baja(id);
+
+
         return RedirectToAction(nameof(Index));
+
     }
+    public IActionResult Detalles(int id)
+        {
+            var inquilino = repo.Obtener(id);
+            if (inquilino == null)
+            {
+                return NotFound();
+            }
+            return View(inquilino);
+        }
 }

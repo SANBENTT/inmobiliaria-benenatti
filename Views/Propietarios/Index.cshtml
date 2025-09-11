@@ -55,9 +55,8 @@
                      @Html.DisplayFor(modelItem => item.direccion)
                  </td>
                 <td>
-                    <a href="/Propietarios/Edicion/@item.id">Editar</a>
                     @Html.ActionLink("Editar", "Edicion", new { id = item.id }) |
-                    @Html.ActionLink("Detalles", "Details", new { id = item.id }) |
+                    @Html.ActionLink("Detalles", "Detalles", new { id = item.id }) |
                     
                     <input type="button" value="Eliminar" class="btn btn-primary" onclick="Eliminar(@item.id, `@item.nombre`)" />
                 </td>

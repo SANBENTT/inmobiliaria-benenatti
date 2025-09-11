@@ -1,0 +1,82 @@
+@model IEnumerable<inmobiliaria_benenatti.Models.Inmueble>
+
+@{
+    ViewData["Title"] = "Listado de Inmuebles";
+}
+
+<div class="text-center">
+    <h1 class="display-4">Listado de Inmuebles</h1>
+</div>
+<h3><a href="/Inmuebles/Edicion/">Crear Nuevo Inmuebles</a></h3>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.IdInmueble)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Direccion)
+            </th>
+            <th>    
+                @Html.DisplayNameFor(model => model.Ambientes)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Superficie)
+            </th>
+             <th>
+                @Html.DisplayNameFor(model => model.Latitud)
+            </th>
+             <th>
+                @Html.DisplayNameFor(model => model.Longitud)
+            </th>
+             <th>
+                @Html.DisplayNameFor(model => model.PropietarioId)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model) 
+        {
+            <tr>
+                <td>
+                   @Html.DisplayFor(model => item.IdInmueble)
+                </td>
+                <td>
+                   @Html.DisplayFor(model => item.Direccion)
+                </td>
+                 <td>
+                   @Html.DisplayFor(model => item.Ambientes)
+                </td>
+                 <td>
+                    @Html.DisplayFor(model => item.Superficie)
+                </td>
+                 <td>
+                    @Html.DisplayFor(model => item.Latitud)
+                 </td>
+                 <td>
+                    @Html.DisplayFor(model => item.Longitud)
+                 </td>
+                 <td>
+                    @Html.DisplayFor(model => item.PropietarioId)
+                 </td>
+                <td>
+                    @Html.ActionLink("Editar", "Edicion", new { id = item.IdInmueble }) |
+                    @Html.ActionLink("Detalles", "Detalles", new { id = item.IdInmueble }) |
+                    
+                    <input type="button" value="Eliminar" class="btn btn-primary" onclick="Eliminar(@item.IdInmueble, `@item.Direccion`)" />
+                </td>
+            </tr>    
+        }
+    </tbody>
+</table>
+
+@section Scripts {
+    <script>
+        function Eliminar(IdInmueble, Direccion){
+         if (confirm(`¿Confirma la baja del Inmueble ${Direccion} ?`)) {
+            location.href = "/Inmuebles/Eliminar/" + IdInmueble;
+        }
+    }
+    </script>
+}
