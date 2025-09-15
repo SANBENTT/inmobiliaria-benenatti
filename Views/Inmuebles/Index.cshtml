@@ -30,7 +30,7 @@
                 @Html.DisplayNameFor(model => model.Longitud)
             </th>
              <th>
-                @Html.DisplayNameFor(model => model.PropietarioId)
+                Propietario
             </th>
             <th></th>
         </tr>
@@ -58,7 +58,7 @@
                     @Html.DisplayFor(model => item.Longitud)
                  </td>
                  <td>
-                    @Html.DisplayFor(model => item.PropietarioId)
+                    @item.Propietario?.nombre
                  </td>
                 <td>
                     @Html.ActionLink("Editar", "Edicion", new { id = item.IdInmueble }) |

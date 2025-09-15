@@ -13,17 +13,18 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" name="IdContrato" value="@id" />
             
-            <div class="form-group">
+                    <div class="form-group">
                 <label asp-for="InquilinoId" class="control-label"></label>
-                <input asp-for="InquilinoId" class="form-control" />
+                <select asp-for="InquilinoId" asp-items="ViewBag.Inquilinos" class="form-control"></select>
                 <span asp-validation-for="InquilinoId" class="text-danger"></span>
             </div>
-            
+
             <div class="form-group">
                 <label asp-for="InmuebleId" class="control-label"></label>
-                <input asp-for="InmuebleId" class="form-control" />
+                <select asp-for="InmuebleId" asp-items="ViewBag.Inmuebles" class="form-control"></select>
                 <span asp-validation-for="InmuebleId" class="text-danger"></span>
             </div>
+
             
             <div class="form-group">
                 <label asp-for="FechaInicio" class="control-label"></label>

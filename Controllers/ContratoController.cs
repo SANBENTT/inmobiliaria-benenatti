@@ -1,5 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 using inmobiliaria_benenatti.Models;
+using Microsoft.AspNetCore.Mvc.Rendering;
 
 namespace inmobiliaria_benenatti.Controllers
 {
@@ -30,30 +31,17 @@ namespace inmobiliaria_benenatti.Controllers
 
         public ActionResult Edicion(int id = 0)
         {
-            try
-            {
-                if (id == 0)
-                {
+            var repoInmuebles = new RepositorioInmuebles();
+            var repoInquilinos = new RepositorioInquilinos();
+            ViewBag.Inmuebles = new SelectList(repoInmuebles.ObtenerListaInmuebles(), "IdInmueble", "Direccion");
+            ViewBag.Inquilinos = new SelectList(repoInquilinos.ObtenerListaInquilinos(), "id", "nombre");
 
-                    return View(new Contrato());
-                }
-                else
-                {
-
-                    var contrato = repositorio.Obtener(id);
-                    if (contrato == null)
-                    {
-                        return NotFound();
-                    }
-                    return View(contrato);
-                }
-            }
-            catch (Exception ex)
-            {
-                ViewBag.Error = ex.Message;
+            if (id == 0)
                 return View(new Contrato());
-            }
+            else
+                return View(repositorio.Obtener(id));
         }
+
 
 
         [HttpPost]

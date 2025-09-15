@@ -1,10 +1,19 @@
 @model inmobiliaria_benenatti.Models.Inmueble
 
 @{
-    ViewData["Title"] = "Listado de Inmuebles";
-    int id = Model==null ? 0 : Model.IdInmueble;
-    }
+    ViewData["Title"] = "Detalles del Inmueble";
+}
 
+@if (Model == null)
+{
+    <div class="alert alert-danger">
+        <h4>Error</h4>
+        <p>El inmueble solicitado no existe o no se pudo cargar.</p>
+        <a asp-action="Index" class="btn btn-secondary">Volver al Listado</a>
+    </div>
+}
+else
+{
 <h4>Detalles del Inmuebles</h4>
 <hr />
 <div class="row">
@@ -54,12 +63,17 @@
                         @Html.DisplayFor(model => model.Longitud)
                     </dd>
 
-                    <dt class="col-sm-4">
-                        @Html.DisplayNameFor(model => model.PropietarioId)
-                    </dt>
-                    <dd class="col-sm-8">
-                        @Html.DisplayFor(model => model.PropietarioId)
-                    </dd>
+                    <dt class="col-sm-4">Propietario:</dt>
+                        <dd class="col-sm-8">
+                            @if (Model.Propietario != null && !string.IsNullOrEmpty(Model.Propietario.nombre))
+                            {
+                                @Model.Propietario.nombre
+                            }
+                            else
+                            {
+                                <span class="text-muted">ID: @Model.PropietarioId</span>
+                            }
+                        </dd>
                 </dl>
             </div>
         </div>
@@ -70,3 +84,4 @@
     </div>
 </div>
 
+}

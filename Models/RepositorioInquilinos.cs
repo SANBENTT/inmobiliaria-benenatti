@@ -180,27 +180,53 @@ public class RepositorioInquilinos
         }
         return existe;
     }
-    
+
     public bool ExisteDni(string dni, int id = 0)
+    {
+        bool existe = false;
+        using (var connection = new MySqlConnection(connectionString))
         {
-            bool existe = false;
-            using (var connection = new MySqlConnection(connectionString))
-            {
-                var query = @"SELECT COUNT(*) 
+            var query = @"SELECT COUNT(*) 
                             FROM inquilinos 
                             WHERE dni = @dni AND id != @id";
 
-                using (var command = new MySqlCommand(query, connection))
-                {
-                    command.Parameters.AddWithValue("@dni", dni);
-                    command.Parameters.AddWithValue("@id", id);
-                    connection.Open();
-                    var result = Convert.ToInt32(command.ExecuteScalar());
-                    existe = result > 0;
-                }
+            using (var command = new MySqlCommand(query, connection))
+            {
+                command.Parameters.AddWithValue("@dni", dni);
+                command.Parameters.AddWithValue("@id", id);
+                connection.Open();
+                var result = Convert.ToInt32(command.ExecuteScalar());
+                existe = result > 0;
             }
-            return existe;
         }
+        return existe;
+    }
+        
+
+        public List<Inquilinos> ObtenerListaInquilinos()
+{
+    var inquilinos = new List<Inquilinos>();
+    using (var connection = new MySqlConnection(connectionString))
+    {
+        var query = @$"SELECT {nameof(Inquilinos.id)}, {nameof(Inquilinos.nombre)}
+                       FROM Inquilinos";
+        using (var command = new MySqlCommand(query, connection))
+        {
+            connection.Open();
+            var reader = command.ExecuteReader();
+            while (reader.Read())
+            {
+                inquilinos.Add(new Inquilinos
+                {
+                    id = reader.GetInt32(nameof(Inquilinos.id)),
+                    nombre = reader.GetString(nameof(Inquilinos.nombre))
+                });
+            }
+        }
+    }
+    return inquilinos;
+}
+
 
 
 }

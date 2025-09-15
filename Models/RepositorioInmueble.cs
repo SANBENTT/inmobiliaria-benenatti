@@ -12,14 +12,16 @@ public class RepositorioInmuebles
 
         using (MySqlConnection connection = new MySqlConnection(connectionString))
         {
-            var query = @$"SELECT {nameof(Inmueble.IdInmueble)}, 
-                                {nameof(Inmueble.Direccion)}, 
-                                {nameof(Inmueble.Ambientes)},
-                                {nameof(Inmueble.Superficie)}, 
-                                {nameof(Inmueble.Latitud)}, 
-                                {nameof(Inmueble.Longitud)}, 
-                                {nameof(Inmueble.PropietarioId)}
-                             FROM inmuebles";
+            var query = @$"SELECT i.{nameof(Inmueble.IdInmueble)}, 
+                                i.{nameof(Inmueble.Direccion)}, 
+                                i.{nameof(Inmueble.Ambientes)},
+                                i.{nameof(Inmueble.Superficie)}, 
+                                i.{nameof(Inmueble.Latitud)}, 
+                                i.{nameof(Inmueble.Longitud)}, 
+                                i.{nameof(Inmueble.PropietarioId)},
+                                p.{nameof(Propietarios.nombre)}
+                                FROM inmuebles i
+                                INNER JOIN propietarios p ON i.{nameof(Inmueble.PropietarioId)} = p.{nameof(Propietarios.id)}";
 
             using (MySqlCommand command = new MySqlCommand(query, connection))
             {
@@ -36,7 +38,11 @@ public class RepositorioInmuebles
                         Latitud = reader.GetDecimal(nameof(Inmueble.Latitud)),
                         Longitud = reader.GetDecimal(nameof(Inmueble.Longitud)),
                         PropietarioId = reader.GetInt32(nameof(Inmueble.PropietarioId)),
-                     });
+                        Propietario = new Propietarios
+                        {
+                            nombre = reader.GetString(nameof(Propietarios.nombre))
+                        }
+                    });
                 }
                 connection.Close();
             }
@@ -54,14 +60,17 @@ public class RepositorioInmuebles
         using (MySqlConnection connection = new MySqlConnection(connectionString))
 
         {
-            var query = @$"SELECT {nameof(Inmueble.IdInmueble)}, 
-                                {nameof(Inmueble.Direccion)}, 
-                                {nameof(Inmueble.Ambientes)},
-                                {nameof(Inmueble.Superficie)}, 
-                                {nameof(Inmueble.Latitud)}, 
-                                {nameof(Inmueble.Longitud)}, 
-                                {nameof(Inmueble.PropietarioId)}
-                             FROM inmuebles WHERE {nameof(Inmueble.IdInmueble)} = @IdInmueble";
+            var query = @$"SELECT i.{nameof(Inmueble.IdInmueble)}, 
+                                i.{nameof(Inmueble.Direccion)}, 
+                                i.{nameof(Inmueble.Ambientes)},
+                                i.{nameof(Inmueble.Superficie)}, 
+                                i.{nameof(Inmueble.Latitud)}, 
+                                i.{nameof(Inmueble.Longitud)}, 
+                                i.{nameof(Inmueble.PropietarioId)},
+                                p.{nameof(Propietarios.nombre)}
+                                FROM inmuebles i
+                                INNER JOIN propietarios p ON i.{nameof(Inmueble.PropietarioId)} = p.{nameof(Propietarios.id)}
+                                WHERE i.{nameof(Inmueble.IdInmueble)} = @IdInmueble";
             using (MySqlCommand command = new MySqlCommand(query, connection))
             {
                 command.Parameters.AddWithValue("@IdInmueble", id);
@@ -78,7 +87,11 @@ public class RepositorioInmuebles
                         Latitud = reader.GetDecimal(nameof(Inmueble.Latitud)),
                         Longitud = reader.GetDecimal(nameof(Inmueble.Longitud)),
                         PropietarioId = reader.GetInt32(nameof(Inmueble.PropietarioId)),
-                     };
+                        Propietario = new Propietarios
+                        {
+                            nombre = reader.GetString(nameof(Propietarios.nombre))
+                        }
+                    };
                 }
                 connection.Close();
             }
@@ -103,11 +116,11 @@ public class RepositorioInmuebles
             using (MySqlCommand command = new MySqlCommand(query, connection))
             {
                 command.Parameters.AddWithValue("@direccion", inmuebles.Direccion);
-                    command.Parameters.AddWithValue("@ambientes", inmuebles.Ambientes);
-                    command.Parameters.AddWithValue("@superficie", inmuebles.Superficie);
-                    command.Parameters.AddWithValue("@latitud", inmuebles.Latitud);
-                    command.Parameters.AddWithValue("@longitud", inmuebles.Longitud);
-                    command.Parameters.AddWithValue("@propietarioId", inmuebles.PropietarioId);
+                command.Parameters.AddWithValue("@ambientes", inmuebles.Ambientes);
+                command.Parameters.AddWithValue("@superficie", inmuebles.Superficie);
+                command.Parameters.AddWithValue("@latitud", inmuebles.Latitud);
+                command.Parameters.AddWithValue("@longitud", inmuebles.Longitud);
+                command.Parameters.AddWithValue("@propietarioId", inmuebles.PropietarioId);
                 connection.Open();
                 res = Convert.ToInt32(command.ExecuteScalar());
                 connection.Close();
@@ -147,8 +160,8 @@ public class RepositorioInmuebles
         }
         return res;
     }
-    
-    public int Baja (int id)
+
+    public int Baja(int id)
     {
         int res = -1;
         using (MySqlConnection connection = new MySqlConnection(connectionString))
@@ -164,4 +177,31 @@ public class RepositorioInmuebles
         }
         return res;
     }
+
+
+    public List<Inmueble> ObtenerListaInmuebles()
+{
+    var inmuebles = new List<Inmueble>();
+    using (var connection = new MySqlConnection(connectionString))
+    {
+        var query = @$"SELECT {nameof(Inmueble.IdInmueble)}, {nameof(Inmueble.Direccion)}
+                       FROM Inmuebles";
+        using (var command = new MySqlCommand(query, connection))
+        {
+            connection.Open();
+            var reader = command.ExecuteReader();
+            while (reader.Read())
+            {
+                inmuebles.Add(new Inmueble
+                {
+                    IdInmueble = reader.GetInt32(nameof(Inmueble.IdInmueble)),
+                    Direccion = reader.GetString(nameof(Inmueble.Direccion))
+                });
+            }
+        }
+    }
+    return inmuebles;
+}
+
+    
 }

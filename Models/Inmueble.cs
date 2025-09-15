@@ -25,4 +25,5 @@ public class Inmueble
         public int PropietarioId { get; set; }
 
         public Propietarios? Propietario { get; set; }
+        
 }

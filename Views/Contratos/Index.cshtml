@@ -14,12 +14,8 @@
             <th>
                 @Html.DisplayNameFor(model => model.IdContrato)
             </th>
-            <th>
-                @Html.DisplayNameFor(model => model.InquilinoId)
-            </th>
-            <th>    
-                @Html.DisplayNameFor(model => model.InmuebleId)
-            </th>
+            <th>Inquilino</th>
+            <th>Inmueble</th>
             <th>
                 @Html.DisplayNameFor(model => model.FechaInicio)
             </th>
@@ -39,12 +35,8 @@
                 <td>
                    @Html.DisplayFor(modelItem => item.IdContrato)
                 </td>
-                <td>
-                   @Html.DisplayFor(modelItem => item.InquilinoId)
-                </td>
-                <td>
-                   @Html.DisplayFor(modelItem => item.InmuebleId)
-                </td>
+                <td>@item.Inquilino?.nombre</td>
+                <td>@item.Inmueble?.Direccion</td>
                 <td>
                     @Html.DisplayFor(modelItem => item.FechaInicio)
                 </td>
