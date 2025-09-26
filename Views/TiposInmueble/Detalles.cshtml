@@ -1,0 +1,47 @@
+@model inmobiliaria_benenatti.Models.TipoInmueble
+
+@{
+    ViewData["Title"] = "Detalles del Tipo de Inmueble";
+}
+
+<div class="container mt-4">
+    <h1>@ViewData["Title"]</h1>
+
+    <div class="card">
+        <div class="card-header">
+            <h5 class="card-title mb-0">@Model.Nombre</h5>
+        </div>
+        <div class="card-body">
+            <dl class="row">
+                <dt class="col-sm-3">ID:</dt>
+                <dd class="col-sm-9">@Model.IdTipoInmueble</dd>
+
+                <dt class="col-sm-3">Nombre:</dt>
+                <dd class="col-sm-9">@Model.Nombre</dd>
+
+                <dt class="col-sm-3">Descripción:</dt>
+                <dd class="col-sm-9">@(Model.Descripcion ?? "No especificada")</dd>
+            </dl>
+        </div>
+        <div class="card-footer">
+            <div class="d-flex justify-content-between">
+                <a href="@Url.Action("Index")" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Volver al Listado
+                </a>
+                <div>
+                    <a href="@Url.Action("Edicion", new { id = Model.IdTipoInmueble })" class="btn btn-warning">
+                        <i class="fas fa-edit"></i> Editar
+                    </a>
+                    @if (User.IsInRole("Administrador"))
+                    {
+                        <a href="@Url.Action("Eliminar", new { id = Model.IdTipoInmueble })" 
+                           class="btn btn-danger" 
+                           onclick="return confirm('¿Está seguro de eliminar este tipo de inmueble?')">
+                            <i class="fas fa-trash"></i> Eliminar
+                        </a>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

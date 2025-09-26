@@ -13,7 +13,7 @@ public class Inquilinos
     [StringLength(100, ErrorMessage = "El nombre no puede superar los 100 caracteres")]
     public string nombre { get; set; } = "";
 
-    [Required(ErrorMessage = "El teléfono es obligatorio")]
+    [Required(ErrorMessage = "El telefono es obligatorio")]
     [Phone(ErrorMessage = "El teléfono no tiene un formato válido")]
     public string telefono { get; set; } = "";
 

@@ -13,14 +13,14 @@ public class Propietarios
     [StringLength(100, ErrorMessage = "El nombre no puede superar los 100 caracteres")]
     public string nombre { get; set; } = "";
 
-    [Required(ErrorMessage = "El teléfono es obligatorio")]
-    [Phone(ErrorMessage = "El teléfono no tiene un formato válido")]
+    [Required(ErrorMessage = "El telefono es obligatorio")]
+    [Phone(ErrorMessage = "El telefono no tiene un formato válido")]
     public string telefono { get; set; } = "";
 
     [Required(ErrorMessage = "El email es obligatorio")]
-    [EmailAddress(ErrorMessage = "El email no tiene un formato válido")]
+    [EmailAddress(ErrorMessage = "El email no tiene un formato valido")]
     public string? email { get; set; }
 
-    [Required(ErrorMessage = "La dirección es obligatoria")]
+    [Required(ErrorMessage = "La direccion es obligatoria")]
     public string direccion { get; set; } = "";
 }

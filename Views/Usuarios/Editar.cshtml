@@ -1,0 +1,107 @@
+@model inmobiliaria_benenatti.Models.Usuario
+
+@{
+    ViewData["Title"] = "Editar Usuario";
+    var roles = inmobiliaria_benenatti.Models.Usuario.ObtenerRoles();
+}
+
+<div class="container mt-4">
+    <h1>@ViewData["Title"]</h1>
+
+    @if (ViewBag.Error != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            @ViewBag.Error
+            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+        </div>
+    }
+
+    <form asp-action="Editar" method="post" enctype="multipart/form-data">
+        @Html.AntiForgeryToken()
+        
+        <input type="hidden" asp-for="IdUsuario" />
+
+        <div class="row">
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <label asp-for="Nombre" class="form-label">Nombre *</label>
+                    <input asp-for="Nombre" class="form-control" />
+                    <span asp-validation-for="Nombre" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Email" class="form-label">Email *</label>
+                    <input asp-for="Email" type="email" class="form-control" />
+                    <span asp-validation-for="Email" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Rol" class="form-label">Rol *</label>
+                    <select asp-for="Rol" class="form-select">
+                        <option value="">Seleccione un rol</option>
+                        @foreach (var rol in roles)
+                        {
+                            <option value="@rol.Key">@rol.Value</option>
+                        }
+                    </select>
+                    <span asp-validation-for="Rol" class="text-danger"></span>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="mb-3">
+                    <label class="form-label">Avatar</label>
+                    @if (!string.IsNullOrEmpty(Model.Avatar))
+                    {
+                        <div class="mb-2">
+                            <img src="@Model.Avatar" alt="Avatar actual" class="rounded-circle" style="width: 100px; height: 100px; object-fit: cover;">
+                        </div>
+                    }
+                    <input asp-for="AvatarFile" type="file" class="form-control" accept="image/*" />
+                    <span asp-validation-for="AvatarFile" class="text-danger"></span>
+                    <div class="form-text">Formatos: JPG, PNG, GIF. Máx: 2MB</div>
+                </div>
+
+                <div class="mb-3 form-check">
+                    <input type="checkbox" class="form-check-input" id="cambiarClave" />
+                    <label class="form-check-label" for="cambiarClave">Cambiar contraseña</label>
+                </div>
+
+                <div id="camposClave" style="display: none;">
+                    <div class="mb-3">
+                        <label asp-for="NuevaClave" class="form-label">Nueva Contraseña</label>
+                        <input asp-for="NuevaClave" type="password" class="form-control" />
+                        <span asp-validation-for="NuevaClave" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="ConfirmarClave" class="form-label">Confirmar Contraseña</label>
+                        <input asp-for="ConfirmarClave" type="password" class="form-control" />
+                        <span asp-validation-for="ConfirmarClave" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="row mt-3">
+            <div class="col-12">
+                <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                    <a href="@Url.Action("Index")" class="btn btn-secondary me-md-2">
+                        <i class="fas fa-arrow-left"></i> Volver
+                    </a>
+                    <button type="submit" class="btn btn-primary">
+                        <i class="fas fa-save"></i> Actualizar Usuario
+                    </button>
+                </div>
+            </div>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <script>
+        document.getElementById('cambiarClave').addEventListener('change', function() {
+            document.getElementById('camposClave').style.display = this.checked ? 'block' : 'none';
+        });
+    </script>
+}

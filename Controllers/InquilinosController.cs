@@ -1,9 +1,10 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using inmobiliaria_benenatti.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace inmobiliaria_benenatti.Controllers;
-
+[Authorize]
 public class InquilinosController : Controller
 {
     private readonly ILogger<HomeController> _logger;
@@ -43,7 +44,7 @@ public class InquilinosController : Controller
             return View("Edicion", inquilino);
         }
 
-        // Verificar email duplicado
+        
         if (repo.ExisteEmail(inquilino.email!, id == 0 ? null : id))
         {
             ModelState.AddModelError("email", "El email ya está en uso por otro inquilino");
@@ -61,7 +62,7 @@ public class InquilinosController : Controller
         return RedirectToAction(nameof(Index));
     }
 
-
+    [Authorize(Roles = "Administrador")]
     public IActionResult Eliminar(int id)
     {
 

@@ -1,0 +1,152 @@
+@model inmobiliaria_benenatti.Models.Pago
+
+@{
+    ViewData["Title"] = "Detalles del Pago";
+    bool esAdministrador = User.IsInRole("Administrador");
+}
+
+<div class="container mt-4">
+    <h1>@ViewData["Title"]</h1>
+
+    <div class="card">
+        <div class="card-header">
+            <h5 class="card-title mb-0">Informacion del Pago #@Model.IdPago</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <h6>Informacion Principal</h6>
+                    <dl class="row">
+                        <dt class="col-sm-4">ID del Pago:</dt>
+                        <dd class="col-sm-8">@Model.IdPago</dd>
+
+                        <dt class="col-sm-4">Contrato:</dt>
+                        <dd class="col-sm-8">
+                            @if (Model.Contrato != null)
+                            {
+                                <strong>@Model.Contrato.DisplayInfo</strong>
+                            }
+                            else
+                            {
+                                <span class="text-muted">Contrato #@Model.ContratoId</span>
+                            }
+                        </dd>
+
+                        <dt class="col-sm-4">Fecha de Pago:</dt>
+                        <dd class="col-sm-8">@Model.FechaPago.ToString("dd/MM/yyyy")</dd>
+
+                        <dt class="col-sm-4">Monto:</dt>
+                        <dd class="col-sm-8"><strong>$@Model.Monto.ToString("N2")</strong></dd>
+
+                        <dt class="col-sm-4">Estado:</dt>
+                        <dd class="col-sm-8">
+                            @if (Model.Anulado)
+                            {
+                                <span class="badge bg-danger">Anulado</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-success">Activo</span>
+                            }
+                        </dd>
+                    </dl>
+                </div>
+
+                <div class="col-md-6">
+                    <h6>Informacion Adicional</h6>
+                    <dl class="row">
+                        <dt class="col-sm-4">Observacion:</dt>
+                        <dd class="col-sm-8">
+                            @if (!string.IsNullOrEmpty(Model.Observacion))
+                            {
+                                @Model.Observacion
+                            }
+                            else
+                            {
+                                <span class="text-muted">No especificada</span>
+                            }
+                        </dd>
+                    </dl>
+                    @if (esAdministrador)
+                    {
+                        <div class="mt-3 p-3 bg-light rounded">
+                            <h6>📊 Informacion de Auditoria</h6>
+                            <dl class="row mt-2">
+                                @if (Model.UsuarioCreadorId.HasValue)
+                                {
+                                    <dt class="col-sm-4">Creado por (ID):</dt>
+                                    <dd class="col-sm-8">Usuario #@Model.UsuarioCreadorId</dd>
+                                }
+
+                                @if (Model.FechaCreacion.HasValue)
+                                {
+                                    <dt class="col-sm-4">Fecha creacion:</dt>
+                                    <dd class="col-sm-8">@Model.FechaCreacion.Value.ToString("dd/MM/yyyy HH:mm:ss")</dd>
+                                }
+
+                                @if (Model.UsuarioCreador != null && !string.IsNullOrEmpty(Model.UsuarioCreador.Nombre))
+                                {
+                                    <dt class="col-sm-4">Creado por (Nombre):</dt>
+                                    <dd class="col-sm-8">
+                                        @Model.UsuarioCreador.Nombre
+                                        <small class="text-muted">(@(Model.UsuarioCreador.Email ?? "Sin email"))</small>
+                                    </dd>
+                                }
+
+                                @if (Model.Anulado)
+                                {
+                                    <dt class="col-sm-4">Estado:</dt>
+                                    <dd class="col-sm-8"><span class="badge bg-danger">ANULADO</span></dd>
+
+                                    @if (Model.UsuarioAnuladorId.HasValue)
+                                    {
+                                        <dt class="col-sm-4">Anulado por (ID):</dt>
+                                        <dd class="col-sm-8">Usuario #@Model.UsuarioAnuladorId</dd>
+                                    }
+
+                                    @if (Model.FechaAnulacion.HasValue)
+                                    {
+                                        <dt class="col-sm-4">Fecha anulacion:</dt>
+                                        <dd class="col-sm-8">@Model.FechaAnulacion.Value.ToString("dd/MM/yyyy HH:mm:ss")</dd>
+                                    }
+
+                                    @if (Model.UsuarioAnulador != null && !string.IsNullOrEmpty(Model.UsuarioAnulador.Nombre))
+                                    {
+                                        <dt class="col-sm-4">Anulado por (Nombre):</dt>
+                                        <dd class="col-sm-8">
+                                            @Model.UsuarioAnulador.Nombre
+                                        </dd>
+                                    }
+                                }
+                            </dl>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+        <div class="card-footer">
+            <div class="d-flex justify-content-between">
+                <a href="@Url.Action("Index")" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Volver a la lista
+                </a>
+                <div>
+                    <a href="@Url.Action("Edicion", new { id = Model.IdPago })" class="btn btn-warning">
+                        <i class="fas fa-edit"></i> Editar
+                    </a>
+                    <a href="@Url.Action("PorContrato", new { contratoId = Model.ContratoId })" class="btn btn-info">
+                        <i class="fas fa-list"></i> Ver Pagos del Contrato
+                    </a>
+                    
+                    @if (!Model.Anulado && esAdministrador)
+                    {
+                        <a href="@Url.Action("Anular", new { id = Model.IdPago })" 
+                           class="btn btn-danger" 
+                           onclick="return confirm('¿Está seguro de que desea anular este pago?')">
+                            <i class="fas fa-ban"></i> Anular Pago
+                        </a>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

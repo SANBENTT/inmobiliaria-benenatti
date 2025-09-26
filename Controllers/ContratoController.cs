@@ -1,18 +1,25 @@
 using Microsoft.AspNetCore.Mvc;
 using inmobiliaria_benenatti.Models;
 using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.AspNetCore.Authorization;
 
 namespace inmobiliaria_benenatti.Controllers
 {
+    [Authorize]
     public class ContratosController : Controller
     {
         private readonly RepositorioContratos repositorio;
+        private readonly RepositorioInmuebles repoInmuebles;
+        private readonly RepositorioInquilinos repoInquilinos;
+        private readonly IConfiguration configuration;
 
-        public ContratosController()
+        public ContratosController(IConfiguration configuration)
         {
+            this.configuration = configuration;
             repositorio = new RepositorioContratos();
+            repoInmuebles = new RepositorioInmuebles();
+            repoInquilinos = new RepositorioInquilinos();
         }
-
 
         public ActionResult Index()
         {
@@ -28,21 +35,15 @@ namespace inmobiliaria_benenatti.Controllers
             }
         }
 
-
         public ActionResult Edicion(int id = 0)
         {
-            var repoInmuebles = new RepositorioInmuebles();
-            var repoInquilinos = new RepositorioInquilinos();
-            ViewBag.Inmuebles = new SelectList(repoInmuebles.ObtenerListaInmuebles(), "IdInmueble", "Direccion");
-            ViewBag.Inquilinos = new SelectList(repoInquilinos.ObtenerListaInquilinos(), "id", "nombre");
-
+            CargarListas();
+            
             if (id == 0)
                 return View(new Contrato());
             else
                 return View(repositorio.Obtener(id));
         }
-
-
 
         [HttpPost]
         [ValidateAntiForgeryToken]
@@ -50,32 +51,86 @@ namespace inmobiliaria_benenatti.Controllers
         {
             try
             {
+                
+                var usuarioActual = ObtenerUsuarioActual();
+                if (usuarioActual != null)
+                {
+                    contrato.UsuarioCreadorId = usuarioActual.IdUsuario;
+                }
+
+                
+                if (ExisteSuperposicionContrato(contrato))
+                {
+                    ModelState.AddModelError("", "El inmueble ya tiene un contrato activo en las fechas seleccionadas.");
+                }
+
                 if (ModelState.IsValid)
                 {
                     if (contrato.IdContrato == 0)
                     {
-
                         repositorio.Alta(contrato);
-                        TempData["Success"] = "Contrato creado exitosamente";
+                        TempData["Success"] = "Contrato creado Correctamente";
                     }
                     else
                     {
-
                         repositorio.Modificar(contrato);
-                        TempData["Success"] = "Contrato modificado exitosamente";
+                        TempData["Success"] = "Cambios Guardados";
                     }
                     return RedirectToAction(nameof(Index));
                 }
+                
+                CargarListas();
                 return View("Edicion", contrato);
             }
             catch (Exception ex)
             {
-                ViewBag.Error = ex.Message;
+                ModelState.AddModelError("", $"Error al guardar el contrato: {ex.Message}");
+                CargarListas();
                 return View("Edicion", contrato);
             }
         }
 
+        
+        [Authorize(Roles = "Administrador,Empleado")]
+        public ActionResult Terminar(int id)
+        {
+            try
+            {
+                var usuarioActual = ObtenerUsuarioActual();
+                if (usuarioActual == null)
+                {
+                    TempData["Error"] = "No se pudo identificar al usuario";
+                    return RedirectToAction(nameof(Index));
+                }
 
+                bool resultado = repositorio.TerminarContrato(id, usuarioActual.IdUsuario);
+                if (resultado)
+                {
+                    TempData["Success"] = "Contrato finalizado exitosamente";
+                }
+                else
+                {
+                    TempData["Error"] = "No se pudo finalizar el contrato";
+                }
+            }
+            catch (Exception ex)
+            {
+                TempData["Error"] = $"Error al terminar el contrato: {ex.Message}";
+            }
+            return RedirectToAction(nameof(Index));
+        }
+
+        
+        private Usuario? ObtenerUsuarioActual()
+        {
+            var email = User.Identity?.Name;
+            if (string.IsNullOrEmpty(email)) return null;
+            
+            var repoUsuarios = new RepositorioUsuarios(configuration);
+            return repoUsuarios.ObtenerPorEmail(email);
+        }
+
+        [Authorize(Roles = "Administrador")]
         public ActionResult Eliminar(int id)
         {
             try
@@ -86,7 +141,6 @@ namespace inmobiliaria_benenatti.Controllers
                     TempData["Error"] = "Contrato no encontrado";
                     return RedirectToAction(nameof(Index));
                 }
-
 
                 int resultado = repositorio.Baja(id);
                 if (resultado > 0)
@@ -107,7 +161,6 @@ namespace inmobiliaria_benenatti.Controllers
             }
         }
 
-
         public IActionResult Detalles(int id)
         {
             var contrato = repositorio.Obtener(id);
@@ -117,6 +170,22 @@ namespace inmobiliaria_benenatti.Controllers
             }
             return View(contrato);
         }
+
         
+        private void CargarListas()
+        {
+            ViewBag.Inmuebles = new SelectList(repoInmuebles.ObtenerListaInmuebles(), "IdInmueble", "Direccion");
+            ViewBag.Inquilinos = new SelectList(repoInquilinos.ObtenerListaInquilinos(), "id", "nombre");
+        }
+
+        private bool ExisteSuperposicionContrato(Contrato contrato)
+        {
+            return repositorio.ExisteSuperposicionContrato(
+                contrato.InmuebleId, 
+                contrato.FechaInicio, 
+                contrato.FechaFin, 
+                contrato.IdContrato
+            );
+        }
     }
 }

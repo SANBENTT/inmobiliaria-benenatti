@@ -1,29 +1,19 @@
 @model IEnumerable<inmobiliaria_benenatti.Models.Inmueble>
 
 @{
-    ViewData["Title"] = "Lista de Inmuebles";
+    ViewData["Title"] = "Inmuebles Disponibles";
 }
 
 <div class="container mt-4">
     <h1>@ViewData["Title"]</h1>
 
-    @if (TempData["Success"] != null)
-    {
-        <div class="alert alert-success">@TempData["Success"]</div>
-    }
-
     <div class="d-flex justify-content-between mb-3">
-        <a href="@Url.Action("Edicion")" class="btn btn-primary">
-            <i class="fas fa-plus"></i> Nuevo Inmueble
+        <a href="@Url.Action("Index")" class="btn btn-secondary">
+            <i class="fas fa-arrow-left"></i> Volver a Todos los Inmuebles
         </a>
-        <div>
-            <a href="@Url.Action("Disponibles")" class="btn btn-success">
-                <i class="fas fa-home"></i> Inmuebles Disponibles
-            </a>
-            <a href="@Url.Action("DisponiblesPorFecha")" class="btn btn-info">
-                <i class="fas fa-calendar"></i> Buscar por Fechas
-            </a>
-        </div>
+        <a href="@Url.Action("DisponiblesPorFecha")" class="btn btn-info">
+            <i class="fas fa-calendar"></i> Buscar por Fechas
+        </a>
     </div>
 
     <div class="table-responsive">
@@ -31,12 +21,12 @@
             <thead class="table-dark">
                 <tr>
                     <th>ID</th>
-                    <th>Dirección</th>
+                    <th>Direccion</th>
                     <th>Tipo</th>
                     <th>Uso</th>
                     <th>Ambientes</th>
+                    <th>Superficie</th>
                     <th>Propietario</th>
-                    <th>Estado</th>
                     <th>Acciones</th>
                 </tr>
             </thead>
@@ -49,17 +39,8 @@
                         <td>@(inmueble.TipoInmueble?.Nombre ?? "N/A")</td>
                         <td>@inmueble.UsoNombre</td>
                         <td>@inmueble.Ambientes</td>
+                        <td>@inmueble.Superficie.ToString("N2") m²</td>
                         <td>@inmueble.Propietario?.nombre</td>
-                        <td>
-                            @if (inmueble.Disponible)
-                            {
-                                <span class="badge bg-success">Disponible</span>
-                            }
-                            else
-                            {
-                                <span class="badge bg-secondary">No disponible</span>
-                            }
-                        </td>
                         <td>
                             <a href="@Url.Action("Detalles", new { id = inmueble.IdInmueble })" 
                                class="btn btn-info btn-sm" title="Ver detalles">
@@ -69,14 +50,6 @@
                                class="btn btn-warning btn-sm" title="Editar">
                                 <i class="fas fa-edit"></i>
                             </a>
-                            @if (User.IsInRole("Administrador"))
-                            {
-                                <a href="@Url.Action("Eliminar", new { id = inmueble.IdInmueble })" 
-                                   class="btn btn-danger btn-sm" title="Eliminar"
-                                   onclick="return confirm('¿Estas seguro de eliminar este inmueble?')">
-                                    <i class="fas fa-trash"></i>
-                                </a>
-                            }
                         </td>
                     </tr>
                 }

@@ -22,7 +22,16 @@ public class Contrato
     [Range(1, 99999999, ErrorMessage = "El monto debe ser mayor a 0")]
     public decimal Monto { get; set; }
 
-    // Propiedades de navegación
+
+    public int? UsuarioCreadorId { get; set; }
+    public int? UsuarioTerminadorId { get; set; }
+    public DateTime? FechaCreacion { get; set; }
+    public DateTime? FechaTerminacion { get; set; }
+    public bool Terminado { get; set; }
     public Inquilinos? Inquilino { get; set; }
     public Inmueble? Inmueble { get; set; }
+    public Usuario? UsuarioCreador { get; set; }
+    public Usuario? UsuarioTerminador { get; set; }
+
+    public string DisplayInfo => $"{Inmueble?.Direccion} - {Inquilino?.nombre} ({FechaInicio:dd/MM/yyyy} a {FechaFin:dd/MM/yyyy})";
 }

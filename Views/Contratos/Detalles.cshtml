@@ -1,58 +1,112 @@
 @model inmobiliaria_benenatti.Models.Contrato
+@using Microsoft.AspNetCore.Authorization
+@inject IAuthorizationService AuthorizationService
 
 @{
-    ViewData["Title"] = "Listado de Contratos";
-    int id = Model==null ? 0 : Model.IdContrato;
-    }
+    ViewData["Title"] = "Detalles del Contrato";
+    bool esAdministrador = User.IsInRole("Administrador");
+}
 
-<h4>Detalles del Contratos</h4>
-<hr />
-<div class="row">
-    <div class="col-md-6">
-        <div class="card">
-            <div class="card-body">
-                <dl class="row">
-                    <dt class="col-sm-4">
-                        @Html.DisplayNameFor(model => model.IdContrato)
-                    </dt>
-                    <dd class="col-sm-8">
-                        @Html.DisplayFor(model => model.IdContrato)
-                    </dd>
+<div class="container mt-4">
+    <h1>Detalles del Contrato</h1>
 
-                    <dt class="col-sm-4">Inquilino</dt>
-                    <dd class="col-sm-8">@Model?.Inquilino?.nombre</dd>
+    <div class="card">
+        <div class="card-header">
+            <h5 class="card-title mb-0">Informacion del Contrato #@Model.IdContrato</h5>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                <div class="col-md-6">
+                    <h6>Información Principal</h6>
+                    <dl class="row">
+                        <dt class="col-sm-4">ID del Contrato:</dt>
+                        <dd class="col-sm-8">@Model.IdContrato</dd>
 
-                    <dt class="col-sm-4">Inmueble</dt>
-                    <dd class="col-sm-8">@Model?.Inmueble?.Direccion</dd>
-                    </dd>
+                        <dt class="col-sm-4">Inquilino:</dt>
+                        <dd class="col-sm-8">@Model.Inquilino?.nombre</dd>
 
-                    <dt class="col-sm-4">
-                        @Html.DisplayNameFor(model => model.FechaInicio)
-                    </dt>
-                    <dd class="col-sm-8">
-                        @Html.DisplayFor(model => model.FechaInicio)
-                    </dd>
+                        <dt class="col-sm-4">Inmueble:</dt>
+                        <dd class="col-sm-8">@Model.Inmueble?.Direccion</dd>
 
-                    <dt class="col-sm-4">
-                        @Html.DisplayNameFor(model => model.FechaFin)
-                    </dt>
-                    <dd class="col-sm-8">
-                        @Html.DisplayFor(model => model.FechaFin)
-                    </dd>
+                        <dt class="col-sm-4">Fecha de Inicio:</dt>
+                        <dd class="col-sm-8">@Model.FechaInicio.ToString("dd/MM/yyyy")</dd>
 
-                    <dt class="col-sm-4">
-                        @Html.DisplayNameFor(model => model.Monto)
-                    </dt>
-                    <dd class="col-sm-8">
-                        @Html.DisplayFor(model => model.Monto)
-                    </dd>
-                </dl>
+                        <dt class="col-sm-4">Fecha de Fin:</dt>
+                        <dd class="col-sm-8">@Model.FechaFin.ToString("dd/MM/yyyy")</dd>
+
+                        <dt class="col-sm-4">Monto Mensual:</dt>
+                        <dd class="col-sm-8">$@Model.Monto.ToString("N2")</dd>
+
+                        <dt class="col-sm-4">Estado:</dt>
+                        <dd class="col-sm-8">
+                            @if (Model.Terminado)
+                            {
+                                <span class="badge bg-danger">Terminado</span>
+                            }
+                            else if (Model.FechaFin < DateTime.Today)
+                            {
+                                <span class="badge bg-warning">Vencido</span>
+                            }
+                            else
+                            {
+                                <span class="badge bg-success">Activo</span>
+                            }
+                        </dd>
+                    </dl>
+                </div>
+
+                @if (esAdministrador)
+                {
+                    <div class="col-md-6">
+                        <h6>📊 Información de Auditoria</h6>
+                        <dl class="row">
+                            @if (Model.UsuarioCreador != null)
+                            {
+                                <dt class="col-sm-4">Creado por:</dt>
+                                <dd class="col-sm-8">
+                                    @Model.UsuarioCreador.Nombre 
+                                    <small class="text-muted">(@Model.UsuarioCreador.Email)</small>
+                                </dd>
+
+                                <dt class="col-sm-4">Fecha creacion:</dt>
+                                <dd class="col-sm-8">
+                                    @Model.FechaCreacion?.ToString("dd/MM/yyyy HH:mm:ss")
+                                </dd>
+                            }
+                            
+                            @if (Model.Terminado && Model.UsuarioTerminador != null)
+                            {
+                                <dt class="col-sm-4">Terminado por:</dt>
+                                <dd class="col-sm-8">
+                                    @Model.UsuarioTerminador.Nombre 
+                                    <small class="text-muted">(@Model.UsuarioTerminador.Email)</small>
+                                </dd>
+
+                                <dt class="col-sm-4">Fecha terminacion:</dt>
+                                <dd class="col-sm-8">
+                                    @Model.FechaTerminacion?.ToString("dd/MM/yyyy HH:mm:ss")
+                                </dd>
+                            }
+                        </dl>
+                    </div>
+                }
             </div>
         </div>
-
-        <div class="form-group mt-3">
-            <a asp-action="Index" class="btn btn-secondary">Volver al Listado</a>
+        <div class="card-footer">
+            <div class="d-flex justify-content-between">
+                <a href="@Url.Action("Index")" class="btn btn-secondary">
+                    <i class="fas fa-arrow-left"></i> Volver al Listado
+                </a>
+                
+                @if (!Model.Terminado && esAdministrador)
+                {
+                    <a href="@Url.Action("Terminar", new { id = Model.IdContrato })" 
+                       class="btn btn-warning" 
+                       onclick="return confirm('¿Estas seguro de que deseas terminar este contrato?')">
+                        <i class="fas fa-ban"></i> Terminar Contrato
+                    </a>
+                }
+            </div>
         </div>
     </div>
 </div>
-

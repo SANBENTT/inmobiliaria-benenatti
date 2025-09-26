@@ -1,0 +1,150 @@
+@model inmobiliaria_benenatti.Models.Usuario
+
+@{
+    ViewData["Title"] = "Editar Perfil";
+}
+
+<h2>Editar Mi Perfil</h2>
+
+<form asp-action="EditarPerfil" method="post" enctype="multipart/form-data">
+    <div class="row">
+        <div class="col-md-6">
+            <div class="card mb-3">
+                <div class="card-header">
+                    <h5>Informacion Personal</h5>
+                </div>
+                <div class="card-body">
+                    <input type="hidden" asp-for="IdUsuario" />
+                    
+                    <div class="mb-3">
+                        <label asp-for="Nombre" class="form-label">Nombre Completo</label>
+                        <input asp-for="Nombre" class="form-control" />
+                        <span asp-validation-for="Nombre" class="text-danger"></span>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label asp-for="Email" class="form-label">Email</label>
+                        <input asp-for="Email" class="form-control" readonly />
+                        <small class="form-text text-muted">El email no se puede modificar</small>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label class="form-label">Rol Actual</label>
+                        <input type="text" class="form-control" value="@ViewBag.RolActual" readonly />
+                        <small class="form-text text-muted">El rol no se puede modificar desde el perfil</small>
+                    </div>
+                </div>
+            </div>
+        
+            <div class="card mb-3">
+                <div class="card-header">
+                    <h5>Cambio de Contraseña</h5>
+                </div>
+                <div class="card-body">
+                    <div class="mb-3">
+                        <label asp-for="NuevaClave" class="form-label">Nueva Contraseña</label>
+                        <input asp-for="NuevaClave" type="password" class="form-control" placeholder="Dejar en blanco para mantener la actual" />
+                        <span asp-validation-for="NuevaClave" class="text-danger"></span>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label asp-for="ConfirmarClave" class="form-label">Confirmar Nueva Contraseña</label>
+                        <input asp-for="ConfirmarClave" type="password" class="form-control" />
+                        <span asp-validation-for="ConfirmarClave" class="text-danger"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="card mb-3">
+                <div class="card-header">
+                    <h5>Avatar</h5>
+                </div>
+                <div class="card-body text-center">
+                    @if (!string.IsNullOrEmpty(Model.Avatar))
+                    {
+                        <img id="avatarPreview" src="@Model.Avatar" class="img-fluid rounded-circle mb-3" alt="Avatar actual" style="width: 200px; height: 200px; object-fit: cover;" />
+                    }
+                    else
+                    {
+                        <div id="avatarPreview" class="bg-secondary rounded-circle d-inline-flex align-items-center justify-content-center mb-3" style="width: 200px; height: 200px;">
+                            <span class="text-white display-4">@Model.Nombre[0]</span>
+                        </div>
+                    }
+                    
+                    <div class="mb-3">
+                        <label asp-for="AvatarFile" class="form-label">Seleccionar nuevo avatar</label>
+                        <input asp-for="AvatarFile" type="file" class="form-control" accept="image/*" id="avatarInput" />
+                        <span asp-validation-for="AvatarFile" class="text-danger"></span>
+                        <small class="form-text text-muted">Formatos: JPG, PNG, GIF. Máx: 2MB</small>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label asp-for="Avatar" class="form-label">O eliminar avatar actual</label>
+                        <input asp-for="Avatar" class="form-control" placeholder="Dejar vacío para eliminar el avatar" />
+                        <small class="form-text text-muted">Dejar este campo vacío eliminara tu avatar actual</small>
+                    </div>
+                    
+                    @if (!string.IsNullOrEmpty(Model.Avatar))
+                    {
+                        <div class="alert alert-warning">
+                            <small>Para eliminar el avatar, deja el campo "Avatar" vacio</small>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-12">
+            <div class="d-flex gap-2">
+                <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                <a href="@Url.Action("Perfil")" class="btn btn-secondary">Cancelar</a>
+                <a href="@Url.Action("Logout")" class="btn btn-outline-danger ms-auto">Cerrar Sesion</a>
+            </div>
+        </div>
+    </div>
+</form>
+
+@section Scripts {
+    <script>
+        document.getElementById('avatarInput').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const preview = document.getElementById('avatarPreview');
+                    if (preview.tagName === 'IMG') {
+                        preview.src = e.target.result;
+                    } else {
+                        const newImg = document.createElement('img');
+                        newImg.id = 'avatarPreview';
+                        newImg.src = e.target.result;
+                        newImg.className = 'img-fluid rounded-circle mb-3';
+                        newImg.style = 'width: 200px; height: 200px; object-fit: cover;';
+                        preview.parentNode.replaceChild(newImg, preview);
+                    }
+                }
+                reader.readAsDataURL(file);
+            }
+        });
+    </script>
+}
+
+@if (TempData["Success"] != null)
+{
+    <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
+        @TempData["Success"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}
+
+@if (TempData["Error"] != null)
+{
+    <div class="alert alert-danger alert-dismissible fade show mt-3" role="alert">
+        @TempData["Error"]
+        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+}

@@ -1,9 +1,10 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using inmobiliaria_benenatti.Models;
+using Microsoft.AspNetCore.Authorization;
 
 namespace inmobiliaria_benenatti.Controllers;
-
+[Authorize]
 public class PropietariosController : Controller
 {
     private readonly ILogger<HomeController> _logger;
@@ -62,7 +63,7 @@ public class PropietariosController : Controller
         return RedirectToAction(nameof(Index));
     }
 
-
+    [Authorize(Roles = "Administrador")]
     public IActionResult Eliminar(int id)
     {
 
