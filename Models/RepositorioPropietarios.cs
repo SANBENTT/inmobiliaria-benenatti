@@ -48,20 +48,25 @@ public class RepositorioPropietarios
         Propietarios? res = null;
 
         using (MySqlConnection connection = new MySqlConnection(connectionString))
-
         {
-            var query = $@"SELECT {nameof(Propietarios.id)}, 
-                                  {nameof(Propietarios.dni)}, 
-                                  {nameof(Propietarios.nombre)}, 
-                                  {nameof(Propietarios.telefono)}, 
-                                  {nameof(Propietarios.email)}, 
-                                  {nameof(Propietarios.direccion)} 
-                           FROM propietarios WHERE {nameof(Propietarios.id)} = @id";
+            var query = $@"
+            SELECT 
+                {nameof(Propietarios.id)}, 
+                {nameof(Propietarios.dni)}, 
+                {nameof(Propietarios.nombre)}, 
+                {nameof(Propietarios.telefono)}, 
+                {nameof(Propietarios.email)}, 
+                {nameof(Propietarios.direccion)}, 
+                {nameof(Propietarios.clave)}  
+            FROM propietarios 
+            WHERE {nameof(Propietarios.id)} = @id";
+
             using (MySqlCommand command = new MySqlCommand(query, connection))
             {
                 command.Parameters.AddWithValue("@id", id);
                 connection.Open();
                 var reader = command.ExecuteReader();
+
                 if (reader.Read())
                 {
                     res = new Propietarios
@@ -71,14 +76,17 @@ public class RepositorioPropietarios
                         nombre = reader.GetString(nameof(Propietarios.nombre)),
                         telefono = reader.GetString(nameof(Propietarios.telefono)),
                         email = reader.GetString(nameof(Propietarios.email)),
-                        direccion = reader.GetString(nameof(Propietarios.direccion))
+                        direccion = reader.GetString(nameof(Propietarios.direccion)),
+                        clave = reader.GetString(nameof(Propietarios.clave)) 
                     };
                 }
+
                 connection.Close();
             }
             return res;
         }
     }
+
 
     public int Alta(Propietarios propietarios)
     {
@@ -116,13 +124,16 @@ public class RepositorioPropietarios
         bool res = false;
         using (MySqlConnection connection = new MySqlConnection(connectionString))
         {
-            var query = $@"UPDATE propietarios SET 
-                           {nameof(Propietarios.dni)} = @dni, 
-                           {nameof(Propietarios.nombre)} = @nombre, 
-                           {nameof(Propietarios.telefono)} = @telefono, 
-                           {nameof(Propietarios.email)} = @email, 
-                           {nameof(Propietarios.direccion)} = @direccion
-                           WHERE {nameof(Propietarios.id)} = @id";
+            var query = $@"
+            UPDATE propietarios SET 
+                {nameof(Propietarios.dni)} = @dni, 
+                {nameof(Propietarios.nombre)} = @nombre, 
+                {nameof(Propietarios.telefono)} = @telefono, 
+                {nameof(Propietarios.email)} = @email, 
+                {nameof(Propietarios.direccion)} = @direccion,
+                {nameof(Propietarios.clave)} = @clave 
+            WHERE {nameof(Propietarios.id)} = @id";
+
             using (MySqlCommand command = new MySqlCommand(query, connection))
             {
                 command.Parameters.AddWithValue("@id", propietarios.id);
@@ -131,6 +142,8 @@ public class RepositorioPropietarios
                 command.Parameters.AddWithValue("@telefono", propietarios.telefono);
                 command.Parameters.AddWithValue("@email", propietarios.email);
                 command.Parameters.AddWithValue("@direccion", propietarios.direccion);
+                command.Parameters.AddWithValue("@clave", propietarios.clave); 
+
                 connection.Open();
                 res = command.ExecuteNonQuery() > 0;
                 connection.Close();
@@ -138,6 +151,7 @@ public class RepositorioPropietarios
         }
         return res;
     }
+
 
     public int Baja(int id)
     {
@@ -198,35 +212,80 @@ public class RepositorioPropietarios
         }
         return existe;
     }
-        
-            public List<Propietarios> ObtenerListaPropietarios()
-{
-    List<Propietarios> propietarios = new List<Propietarios>();
 
-    using (MySqlConnection connection = new MySqlConnection(connectionString))
+    public List<Propietarios> ObtenerListaPropietarios()
     {
-        var query = @$"SELECT {nameof(Propietarios.id)}, 
+        List<Propietarios> propietarios = new List<Propietarios>();
+
+        using (MySqlConnection connection = new MySqlConnection(connectionString))
+        {
+            var query = @$"SELECT {nameof(Propietarios.id)}, 
                               {nameof(Propietarios.nombre)} 
                        FROM propietarios";
 
-        using (MySqlCommand command = new MySqlCommand(query, connection))
-        {
-            connection.Open();
-            var reader = command.ExecuteReader();
-            while (reader.Read())
+            using (MySqlCommand command = new MySqlCommand(query, connection))
             {
-                propietarios.Add(new Propietarios
+                connection.Open();
+                var reader = command.ExecuteReader();
+                while (reader.Read())
                 {
-                    id = reader.GetInt32(nameof(Propietarios.id)),
-                    nombre = reader.GetString(nameof(Propietarios.nombre))
-                });
+                    propietarios.Add(new Propietarios
+                    {
+                        id = reader.GetInt32(nameof(Propietarios.id)),
+                        nombre = reader.GetString(nameof(Propietarios.nombre))
+                    });
+                }
+                connection.Close();
             }
-            connection.Close();
         }
+
+        return propietarios;
     }
 
-    return propietarios;
-}
+
+    public Propietarios? ObtenerPorEmail(string email)
+    {
+        Propietarios? propietario = null;
+
+        using (var connection = new MySqlConnection(connectionString))
+        {
+            var query = $@"SELECT {nameof(Propietarios.id)},
+                              {nameof(Propietarios.dni)},
+                              {nameof(Propietarios.nombre)},
+                              {nameof(Propietarios.telefono)},
+                              {nameof(Propietarios.email)},
+                              {nameof(Propietarios.direccion)},
+                              {nameof(Propietarios.clave)}
+                       FROM propietarios
+                       WHERE {nameof(Propietarios.email)} = @email";
+
+            using (var command = new MySqlCommand(query, connection))
+            {
+                command.Parameters.AddWithValue("@email", email);
+                connection.Open();
+                var reader = command.ExecuteReader();
+
+                if (reader.Read())
+                {
+                    propietario = new Propietarios
+                    {
+                        id = reader.GetInt32(nameof(Propietarios.id)),
+                        dni = reader.GetString(nameof(Propietarios.dni)),
+                        nombre = reader.GetString(nameof(Propietarios.nombre)),
+                        telefono = reader.GetString(nameof(Propietarios.telefono)),
+                        email = reader.GetString(nameof(Propietarios.email)),
+                        direccion = reader.GetString(nameof(Propietarios.direccion)),
+                        clave = reader.GetString(nameof(Propietarios.clave))
+                    };
+                }
+
+                connection.Close();
+            }
+        }
+
+        return propietario;
+    }
+
 
 
 }

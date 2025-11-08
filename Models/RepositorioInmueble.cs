@@ -132,17 +132,19 @@ public class RepositorioInmuebles
         using (MySqlConnection connection = new MySqlConnection(connectionString))
         {
             var query = @$"INSERT INTO inmuebles 
-                         ({nameof(Inmueble.Direccion)}, 
-                          {nameof(Inmueble.Ambientes)}, 
-                          {nameof(Inmueble.Superficie)}, 
-                          {nameof(Inmueble.Latitud)}, 
-                          {nameof(Inmueble.Longitud)}, 
-                          {nameof(Inmueble.PropietarioId)},
-                          {nameof(Inmueble.TipoInmuebleId)},
-                          {nameof(Inmueble.Uso)},
-                          {nameof(Inmueble.Disponible)}) 
-                         VALUES (@direccion, @ambientes, @superficie, @latitud, @longitud, @propietarioId, @tipoInmuebleId, @uso, @disponible);
-                         SELECT LAST_INSERT_ID();";
+                        ({nameof(Inmueble.Direccion)}, 
+                            {nameof(Inmueble.Ambientes)}, 
+                            {nameof(Inmueble.Superficie)}, 
+                            {nameof(Inmueble.Latitud)}, 
+                            {nameof(Inmueble.Longitud)}, 
+                            {nameof(Inmueble.PropietarioId)},
+                            {nameof(Inmueble.TipoInmuebleId)},
+                            {nameof(Inmueble.Uso)},
+                            {nameof(Inmueble.Disponible)},
+                            {nameof(Inmueble.Foto)}) 
+                        VALUES (@direccion, @ambientes, @superficie, @latitud, @longitud, @propietarioId, @tipoInmuebleId, @uso, @disponible, @foto);
+                        SELECT LAST_INSERT_ID();";
+
 
             using (MySqlCommand command = new MySqlCommand(query, connection))
             {
@@ -155,6 +157,7 @@ public class RepositorioInmuebles
                 command.Parameters.AddWithValue("@tipoInmuebleId", inmueble.TipoInmuebleId);
                 command.Parameters.AddWithValue("@uso", (int)inmueble.Uso);
                 command.Parameters.AddWithValue("@disponible", inmueble.Disponible);
+                command.Parameters.AddWithValue("@foto", inmueble.Foto ?? (object)DBNull.Value);
                 connection.Open();
                 res = Convert.ToInt32(command.ExecuteScalar());
                 connection.Close();

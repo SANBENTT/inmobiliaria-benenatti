@@ -32,6 +32,8 @@ public class Inmueble
     [Required(ErrorMessage = "Debe seleccionar el uso del inmueble")]
     [Display(Name = "Uso del Inmueble")]
     public UsoInmueble Uso { get; set; }
+    public string? Foto { get; set; }
+
 
     public bool Disponible { get; set; } = true;
     public Propietarios? Propietario { get; set; }

@@ -318,34 +318,79 @@ public class RepositorioContratos
             return contratos;
         }
     }
-    
 
 
-            public bool ExisteSuperposicionContrato(int inmuebleId, DateTime fechaInicio, DateTime fechaFin, int contratoIdExcluir = 0)
+
+    public bool ExisteSuperposicionContrato(int inmuebleId, DateTime fechaInicio, DateTime fechaFin, int contratoIdExcluir = 0)
+    {
+        using (MySqlConnection connection = new MySqlConnection(connectionString))
         {
-            using (MySqlConnection connection = new MySqlConnection(connectionString))
-            {
-                var query = @"SELECT COUNT(*) FROM contratos 
+            var query = @"SELECT COUNT(*) FROM contratos 
                             WHERE InmuebleId = @inmuebleId 
                             AND IdContrato != @contratoIdExcluir
                             AND ((FechaInicio BETWEEN @fechaInicio AND @fechaFin) 
                                 OR (FechaFin BETWEEN @fechaInicio AND @fechaFin)
                                 OR (@fechaInicio BETWEEN FechaInicio AND FechaFin)
                                 OR (@fechaFin BETWEEN FechaInicio AND FechaFin))";
-                
-                using (MySqlCommand command = new MySqlCommand(query, connection))
-                {
-                    command.Parameters.AddWithValue("@inmuebleId", inmuebleId);
-                    command.Parameters.AddWithValue("@fechaInicio", fechaInicio);
-                    command.Parameters.AddWithValue("@fechaFin", fechaFin);
-                    command.Parameters.AddWithValue("@contratoIdExcluir", contratoIdExcluir);
-                    
-                    connection.Open();
-                    int count = Convert.ToInt32(command.ExecuteScalar());
-                    connection.Close();
-                    
-                    return count > 0;
-                }
+
+            using (MySqlCommand command = new MySqlCommand(query, connection))
+            {
+                command.Parameters.AddWithValue("@inmuebleId", inmuebleId);
+                command.Parameters.AddWithValue("@fechaInicio", fechaInicio);
+                command.Parameters.AddWithValue("@fechaFin", fechaFin);
+                command.Parameters.AddWithValue("@contratoIdExcluir", contratoIdExcluir);
+
+                connection.Open();
+                int count = Convert.ToInt32(command.ExecuteScalar());
+                connection.Close();
+
+                return count > 0;
             }
         }
+    }
+
+    public Contrato? ObtenerPorId(int id)
+    {
+        Contrato? res = null;
+
+        using (MySqlConnection connection = new MySqlConnection(connectionString))
+        {
+            var query = @$"SELECT c.{nameof(Contrato.IdContrato)},
+                              c.{nameof(Contrato.InquilinoId)},
+                              c.{nameof(Contrato.InmuebleId)},
+                              c.{nameof(Contrato.FechaInicio)},
+                              c.{nameof(Contrato.FechaFin)},
+                              c.{nameof(Contrato.Monto)},
+                              c.{nameof(Contrato.Terminado)},
+                              i.{nameof(Inmueble.Direccion)},
+                       FROM contratos c
+                       INNER JOIN inmuebles i ON c.{nameof(Contrato.InmuebleId)} = i.{nameof(Inmueble.IdInmueble)}
+                       WHERE c.{nameof(Contrato.IdContrato)} = @id";
+
+            using (var command = new MySqlCommand(query, connection))
+            {
+                command.Parameters.AddWithValue("@id", id);
+                connection.Open();
+                var reader = command.ExecuteReader();
+                if (reader.Read())
+                {
+                    res = new Contrato
+                    {
+                        IdContrato = reader.GetInt32(nameof(Contrato.IdContrato)),
+                        InquilinoId = reader.GetInt32(nameof(Contrato.InquilinoId)),
+                        InmuebleId = reader.GetInt32(nameof(Contrato.InmuebleId)),
+                        FechaInicio = reader.GetDateTime(nameof(Contrato.FechaInicio)),
+                        FechaFin = reader.GetDateTime(nameof(Contrato.FechaFin)),
+                        Monto = reader.GetDecimal(nameof(Contrato.Monto)),
+                        Terminado = reader.GetBoolean(nameof(Contrato.Terminado)),
+                        Inmueble = new Inmueble { Direccion = reader.GetString(nameof(Inmueble.Direccion)) }
+                    };
+                }
+                connection.Close();
+            }
+        }
+        return res;
+    }
+
+
 }

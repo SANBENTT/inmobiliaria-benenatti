@@ -23,4 +23,7 @@ public class Propietarios
 
     [Required(ErrorMessage = "La direccion es obligatoria")]
     public string direccion { get; set; } = "";
+    
+    [Required(ErrorMessage = "La clave es obligatoria")]
+    public string clave { get; set; } = "";
 }
